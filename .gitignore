@@ -1,0 +1,10 @@
+# VSCode config
+.vscode/
+
+# Executable & objfile
+*.out
+*.exe
+*.obj
+
+# Folder for test data
+test/
