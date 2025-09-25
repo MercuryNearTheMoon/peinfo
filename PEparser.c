@@ -187,11 +187,24 @@ void print_PE_HEADER(PE_HEADER *peH) {
     printf("\t\tCharacteristics: " WORD_HEX_OUTPUT "\t(%s)\n", coffH->Characteristics, flagStr);
     free(flagStr);
 
+    // Optional Headers
     // Standard COFF Fields
     puts("\tSTANDARD COFF FIELDS:");
-    STD_COFF_FIELDS *coffF = &peH->coffF;
+    STD_COFF_FIELDS *coffF       = &peH->coffF;
     const char *coffF_magic_name = getCOFFMagicName(coffF->Magic);
     printf("\t\tMagic: " WORD_HEX_OUTPUT "\t(%s)\n", coffF->Magic, coffF_magic_name);
+
+    printf("\t\tLinker Version: %d.%d\n", coffF->MajorLinkerVer, coffF->MinorLinkerVer);
+
+    printf("\t\tSize of Code: %d bytes\n", coffF->SizeOfCode);
+
+    printf("\t\tSize of Initialized data: %d bytes\n", coffF->SizeOfInitedData);
+    printf("\t\tSize of Uninitialized data (.bss): %d bytes\n", coffF->SizeOfUninitedData);
+
+    printf("\t\tAddress of Entry Point:" DWORD_HEX_OUTPUT "\n", coffF->AddrOfEntryPoint);
+
+    printf("\t\tAddress of Beginning-of-Code Section:" DWORD_HEX_OUTPUT "\n", coffF->BaseOfCode);
+    printf("\t\tAddress of Beginning-of-Data Section:" DWORD_HEX_OUTPUT "\n", coffF->BaseOfData);
 
     putchar('\n');
 }
@@ -318,7 +331,7 @@ const char *getCOFFMagicName(WORD Magic) {
     // ref: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#optional-header-standard-fields-image-only
     switch (Magic) {
     case 0x10B:
-        return "Normal Executable";
+        return "PE32 Normal Executable";
     case 0x107:
         return "ROM Image";
     case 0x20B:

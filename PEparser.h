@@ -73,6 +73,7 @@ typedef struct {
 typedef struct {
     DWORD Signature;
     COFF_HEADER coffH;
+    // Optional Headers
     STD_COFF_FIELDS coffF;
     // ...
 } PE_HEADER;
