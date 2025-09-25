@@ -109,8 +109,8 @@ typedef struct {
 } WINDOWS_SPECIFIC_FIELDS;
 
 typedef struct {
-    DWORD   VirtualAddress;
-    DWORD   Size;
+    DWORD VirtualAddress;
+    DWORD Size;
 } IMAGE_DATA_DIRECTORY;
 
 typedef struct {
@@ -188,9 +188,7 @@ const char *DataDirectoryNames[16] = {
     "IAT",
     "Delay Import Descriptor",
     "CLR Runtime Header",
-    "Reserved"
-};
-
+    "Reserved"};
 
 const char *wordToChars(WORD);
 const char *dwordToChars(DWORD);

@@ -1,6 +1,5 @@
 #include "PEparser.h"
 
-
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: %s <filename>\n", argv[0]);
@@ -250,7 +249,6 @@ void print_PE_HEADER(PE_HEADER *peH) {
     IMAGE_DATA_DIRECTORY *dd = peH->dd;
     puts("\tData Directories:");
     printDataDirectories(dd);
-
 
     putchar('\n');
 }
