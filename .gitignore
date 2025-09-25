@@ -5,6 +5,7 @@
 *.out
 *.exe
 *.obj
+*.o
 
 # Folder for test data
 test/
