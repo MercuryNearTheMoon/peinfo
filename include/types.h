@@ -37,3 +37,26 @@ typedef enum {
     IMAGE_MACHINE_THUMB     = 0x1c2,  // ARM Thumb
     IMAGE_MACHINE_WCEMIPSV2 = 0x169   // MIPS little-endian WCE v2
 } IMAGE_MACHINE;
+
+typedef enum {
+    COFF_MAGIC_PE32  = 0x10B,
+    COFF_MAGIC_ROM   = 0x107,
+    COFF_MAGIC_PE32P = 0x20B
+} COFF_MAGIC;
+
+typedef enum {
+    IMAGE_SUBSYSTEM_UNKNOWN                  = 0,
+    IMAGE_SUBSYSTEM_NATIVE                   = 1,
+    IMAGE_SUBSYSTEM_WINDOWS_GUI              = 2,
+    IMAGE_SUBSYSTEM_WINDOWS_CUI              = 3,
+    IMAGE_SUBSYSTEM_OS2_CUI                  = 5,
+    IMAGE_SUBSYSTEM_POSIX_CUI                = 7,
+    IMAGE_SUBSYSTEM_NATIVE_WINDOWS           = 8,
+    IMAGE_SUBSYSTEM_WINDOWS_CE_GUI           = 9,
+    IMAGE_SUBSYSTEM_EFI_APPLICATION          = 10,
+    IMAGE_SUBSYSTEM_EFI_BOOT_SERVICE_DRIVER  = 11,
+    IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER       = 12,
+    IMAGE_SUBSYSTEM_EFI_ROM                  = 13,
+    IMAGE_SUBSYSTEM_XBOX                     = 14,
+    IMAGE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION = 15
+} IMAGE_SUBSYSTEM;

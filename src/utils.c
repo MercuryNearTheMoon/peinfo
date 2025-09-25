@@ -153,11 +153,11 @@ char *getCharacteristicsFlags(WORD c) {
 const char *getCOFFMagicName(WORD Magic) {
     // ref: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#optional-header-standard-fields-image-only
     switch (Magic) {
-    case 0x10B:
+    case COFF_MAGIC_PE32:
         return "PE32 Normal Executable";
-    case 0x107:
+    case COFF_MAGIC_ROM:
         return "ROM Image";
-    case 0x20B:
+    case COFF_MAGIC_PE32P:
         return "PE32+ Executable";
     default:
         return UNRECOGNIZED;
@@ -167,33 +167,33 @@ const char *getCOFFMagicName(WORD Magic) {
 const char *getSubsystemName(WORD value) {
     // ref: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#windows-subsystem
     switch (value) {
-    case 1:
+    case IMAGE_SUBSYSTEM_NATIVE:
         return "Device Drivers and Native Windows Processes";
-    case 2:
+    case IMAGE_SUBSYSTEM_WINDOWS_GUI:
         return "Windows GUI Subsystem";
-    case 3:
+    case IMAGE_SUBSYSTEM_WINDOWS_CUI:
         return "Windows Character Subsystem";
-    case 5:
+    case IMAGE_SUBSYSTEM_OS2_CUI:
         return "OS/2 Character Subsystem";
-    case 7:
+    case IMAGE_SUBSYSTEM_POSIX_CUI:
         return "Posix Character Subsystem";
-    case 8:
+    case IMAGE_SUBSYSTEM_NATIVE_WINDOWS:
         return "Native Win9x Driver";
-    case 9:
+    case IMAGE_SUBSYSTEM_WINDOWS_CE_GUI:
         return "Windows CE";
-    case 10:
+    case IMAGE_SUBSYSTEM_EFI_APPLICATION:
         return "EFI App";
-    case 11:
+    case IMAGE_SUBSYSTEM_EFI_BOOT_SERVICE_DRIVER:
         return "EFI driver with Boot Services";
-    case 12:
+    case IMAGE_SUBSYSTEM_EFI_RUNTIME_DRIVER:
         return "EFI Driver with Run-Time Services";
-    case 13:
+    case IMAGE_SUBSYSTEM_EFI_ROM:
         return "EFI ROM Image";
-    case 14:
+    case IMAGE_SUBSYSTEM_XBOX:
         return "XBOX";
-    case 15:
+    case IMAGE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION:
         return "Windows Boot App";
-    case 0:
+    case IMAGE_SUBSYSTEM_UNKNOWN:
     default:
         return "unknown subsystem";
     }
