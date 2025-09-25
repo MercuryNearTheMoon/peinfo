@@ -4,9 +4,18 @@
 #include <string.h>
 #include <time.h>
 
-#define BYTE_HEX_OUTPUT "0x%02X"
-#define WORD_HEX_OUTPUT "0x%04X"
-#define DWORD_HEX_OUTPUT "0x%08X"
+#define RESET "\033[0m"
+#define RED "\033[31m"
+#define GREEN "\033[32m"
+#define YELLOW "\033[33m"
+#define BLUE "\033[34m"
+#define MAGENTA "\033[35m"
+#define CYAN "\033[36m"
+#define WHITE "\033[37m"
+
+#define BYTE_HEX_OUTPUT YELLOW "0x%02X" RESET
+#define WORD_HEX_OUTPUT YELLOW "0x%04X" RESET
+#define DWORD_HEX_OUTPUT YELLOW "0x%08X" RESET
 #define LONG_HEX_OUTPUT DWORD_HEX_OUTPUT
 
 #define MAGIC_MZ 0x5A4D
@@ -14,7 +23,9 @@
 
 #define MAX_FLAG_STR_LEN 512
 
-#define UNRECOGNIZED "Unrecognized"
+#define UNRECOGNIZED RED "Unrecognized" RESET
+#define RESERVED RED "Reserved" RESET
+#define BYTES_STR BLUE "bytes" RESET
 
 typedef uint8_t BYTE;   // 8-bit
 typedef uint16_t WORD;  // 16-bit
@@ -71,10 +82,37 @@ typedef struct {
 } STD_COFF_FIELDS;
 
 typedef struct {
+    DWORD ImageBase;
+    DWORD SectionAlignment;
+    DWORD FileAlignment;
+    // OS: OperatingSystem
+    WORD MajorOSVersion;
+    WORD MinorOSVersion;
+    WORD MajorImageVersion;
+    WORD MinorImageVersion;
+    // Ss: Subsystem
+    WORD MajorSsVersion;
+    WORD MinorSsVersion;
+    DWORD Win32VersionValue; // Reversed, must be 0
+    DWORD SizeOfImage;
+    DWORD SizeOfHeaders;
+    DWORD CheckSum;
+    WORD Subsystem;
+    WORD DllCharacteristics;
+    DWORD SizeOfStackReserve;
+    DWORD SizeOfStackCommit;
+    DWORD SizeOfHeapReserve;
+    DWORD SizeOfHeapCommit;
+    DWORD LoaderFlags; // Reversed, must be 0
+    DWORD NumberOfRvaAndSizes;
+} WINDOWS_SPECIFIC_FIELDS;
+
+typedef struct {
     DWORD Signature;
     COFF_HEADER coffH;
     // Optional Headers
     STD_COFF_FIELDS coffF;
+    WINDOWS_SPECIFIC_FIELDS winF;
     // ...
 } PE_HEADER;
 
@@ -131,8 +169,11 @@ const char *wordToChars(WORD);
 const char *dwordToChars(DWORD);
 const char *getMachineName(WORD);
 const char *getCOFFMagicName(WORD);
+const char *getSubsystemName(WORD);
+
 char *timestampToLocalTime(DWORD);
 char *getCharacteristicsFlags(WORD);
+char *getDLLCharacteristicsFlags(WORD);
 
 IMAGE_DOS_HEADER *parse_IMAGE_DOS_HEADER(FILE *);
 DOS_STUB *parse_DOS_STUB(FILE *, IMAGE_DOS_HEADER *);

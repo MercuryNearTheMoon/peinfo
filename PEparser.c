@@ -87,23 +87,23 @@ void print_IMAGE_DOS_HEADER(IMAGE_DOS_HEADER *h) {
     const char *magicStr = wordToChars(h->e_magic);
 
     printf("\tMagic: " WORD_HEX_OUTPUT "\t(%s)\n", h->e_magic, magicStr);
-    printf("\tMZ file size: %d bytes\n", getMZFileSize(h->e_cp, h->e_cblp));
+    printf("\tMZ file size: %d " BYTES_STR "\n", getMZFileSize(h->e_cp, h->e_cblp));
     printf("\tRelocation table offset: 0x%04X, Nums of entries: %d\n",
            h->e_lfarlc, h->e_crlc);
-    printf("\tDOS header size: %d bytes\n", h->e_cparhdr * 16);
-    printf("\tMZ DOS stub min memory size: %d bytes\n", h->e_minalloc * 16);
-    printf("\tMZ DOS stub max memory size: %d bytes\n", h->e_maxalloc * 16);
+    printf("\tDOS header size: %d " BYTES_STR "\n", h->e_cparhdr * 16);
+    printf("\tMZ DOS stub min memory size: %d " BYTES_STR "\n", h->e_minalloc * 16);
+    printf("\tMZ DOS stub max memory size: %d " BYTES_STR "\n", h->e_maxalloc * 16);
     printf("\tMS DOS init stack addr: 0x%04X (SS:SP = 0x%04X:0x%04X)\n",
            h->e_ss * 16 + h->e_sp, h->e_ss, h->e_sp);
     printf("\tDOS EXE stub checksum: " WORD_HEX_OUTPUT "\n", h->e_csum);
     printf("\tMS DOS initial IP: 0x%04X (CS: 0x%04X, entry=0x%04X)\n",
            h->e_ip, h->e_cs, h->e_cs * 16 + h->e_ip);
     printf("\tOverlay number: %d\n", h->e_ovno);
-    printf("\tReserved part 1(4 WORD): " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT "\n",
+    printf("\t" RESERVED " part 1(4 WORD): " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT "\n",
            h->e_res[0], h->e_res[1], h->e_res[2], h->e_res[3]);
     printf("\tOEM ID: 0x%04X\n", h->e_oemid);
     printf("\tOEM Info: 0x%04X\n", h->e_oeminfo);
-    printf("\tReserved part 2(10 WORD): " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT "\n",
+    printf("\t" RESERVED " part 2(10 WORD): " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT " " WORD_HEX_OUTPUT "\n",
            h->e_res2[0], h->e_res2[1], h->e_res2[2], h->e_res2[3], h->e_res2[4],
            h->e_res2[5], h->e_res2[6], h->e_res2[7], h->e_res2[8], h->e_res2[9]);
     printf("\tNT Headers offset: " LONG_HEX_OUTPUT "\n", h->e_lfanew);
@@ -188,7 +188,7 @@ void print_PE_HEADER(PE_HEADER *peH) {
     free(flagStr);
 
     // Optional Headers
-    // Standard COFF Fields
+    //  Standard COFF Fields
     puts("\tSTANDARD COFF FIELDS:");
     STD_COFF_FIELDS *coffF       = &peH->coffF;
     const char *coffF_magic_name = getCOFFMagicName(coffF->Magic);
@@ -196,15 +196,54 @@ void print_PE_HEADER(PE_HEADER *peH) {
 
     printf("\t\tLinker Version: %d.%d\n", coffF->MajorLinkerVer, coffF->MinorLinkerVer);
 
-    printf("\t\tSize of Code: %d bytes\n", coffF->SizeOfCode);
+    printf("\t\tSize of Code: %d " BYTES_STR "\n", coffF->SizeOfCode);
 
-    printf("\t\tSize of Initialized data: %d bytes\n", coffF->SizeOfInitedData);
-    printf("\t\tSize of Uninitialized data (.bss): %d bytes\n", coffF->SizeOfUninitedData);
+    printf("\t\tSize of Initialized data: %d " BYTES_STR "\n", coffF->SizeOfInitedData);
+    printf("\t\tSize of Uninitialized data (.bss): %d " BYTES_STR "\n", coffF->SizeOfUninitedData);
 
     printf("\t\tAddress of Entry Point:" DWORD_HEX_OUTPUT "\n", coffF->AddrOfEntryPoint);
 
     printf("\t\tAddress of Beginning-of-Code Section:" DWORD_HEX_OUTPUT "\n", coffF->BaseOfCode);
     printf("\t\tAddress of Beginning-of-Data Section:" DWORD_HEX_OUTPUT "\n", coffF->BaseOfData);
+
+    //  Windows-Specific Fields
+    WINDOWS_SPECIFIC_FIELDS *winF = &peH->winF;
+    puts("\tWINDOWS SPECIFIC FIELDS:");
+
+    printf("\t\tImage Base: " DWORD_HEX_OUTPUT "\n", winF->ImageBase);
+
+    printf("\t\tSection Alignment: %d " BYTES_STR "\n", winF->SectionAlignment);
+    printf("\t\tFile Alignment: %d " BYTES_STR "\n", winF->FileAlignment);
+
+    printf("\t\tOperating System Version: %d.%d\n", winF->MajorOSVersion, winF->MinorOSVersion);
+
+    printf("\t\tSubsystem Version: %d.%d\n", winF->MajorSsVersion, winF->MinorSsVersion);
+
+    printf("\t\tImage Version: %d.%d\n", winF->MajorImageVersion, winF->MinorImageVersion);
+
+    printf("\t\tWin32 Version Value: " DWORD_HEX_OUTPUT "\t(" RESERVED ")\n", winF->Win32VersionValue);
+
+    printf("\t\tSize of Image: %d " BYTES_STR "\n", winF->SizeOfImage);
+
+    printf("\t\tSize of Headers: %d " BYTES_STR "\n", winF->SizeOfHeaders);
+
+    printf("\t\tChecksum: " DWORD_HEX_OUTPUT "\n", winF->CheckSum);
+
+    printf("\t\tSubsystem: %d\t(%s)\n", winF->Subsystem, getSubsystemName(winF->Subsystem));
+
+    char *DlCharFlagsStr = getDLLCharacteristicsFlags(winF->DllCharacteristics);
+    printf("\t\tDLL Characteristics: " WORD_HEX_OUTPUT "\t(%s)\n", winF->DllCharacteristics, DlCharFlagsStr);
+    free(DlCharFlagsStr);
+
+    printf("\t\tSize of Stack Reserved: %d " BYTES_STR "\t"
+           "Size of Stack Commited: %d " BYTES_STR "\n",
+           winF->SizeOfStackReserve, winF->SizeOfStackCommit);
+
+    printf("\t\tSize of Heap Reserved: %d " BYTES_STR "\tSize of Heap Commited: %d " BYTES_STR "\n", winF->SizeOfHeapReserve, winF->SizeOfHeapCommit);
+
+    printf("\t\tLoader Flags: " DWORD_HEX_OUTPUT " (" RESERVED ")\n", winF->LoaderFlags);
+
+    printf("\t\tNums of Data Directory: %d\n", winF->NumberOfRvaAndSizes);
 
     putchar('\n');
 }
@@ -300,7 +339,7 @@ char *getCharacteristicsFlags(WORD c) {
     if (c & 0x0020)
         APPEND_FLAG("Large address aware");
     if (c & 0x0040)
-        APPEND_FLAG("Reserved");
+        APPEND_FLAG(RESERVED);
     if (c & 0x0080)
         APPEND_FLAG("Bytes reversed LO");
     if (c & 0x0100)
@@ -339,4 +378,95 @@ const char *getCOFFMagicName(WORD Magic) {
     default:
         return UNRECOGNIZED;
     }
+}
+
+const char *getSubsystemName(WORD value) {
+    // ref: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#windows-subsystem
+    switch (value) {
+    case 1:
+        return "Device Drivers and Native Windows Processes";
+    case 2:
+        return "Windows GUI Subsystem";
+    case 3:
+        return "Windows Character Subsystem";
+    case 5:
+        return "OS/2 Character Subsystem";
+    case 7:
+        return "Posix Character Subsystem";
+    case 8:
+        return "Native Win9x Driver";
+    case 9:
+        return "Windows CE";
+    case 10:
+        return "EFI App";
+    case 11:
+        return "EFI driver with Boot Services";
+    case 12:
+        return "EFI Driver with Run-Time Services";
+    case 13:
+        return "EFI ROM Image";
+    case 14:
+        return "XBOX";
+    case 15:
+        return "Windows Boot App";
+    case 0:
+    default:
+        return "unknown subsystem";
+    }
+}
+
+char *getDLLCharacteristicsFlags(WORD c) {
+    // ref: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#dll-characteristics
+    char *FlagStr = calloc(MAX_FLAG_STR_LEN, sizeof(char));
+    if (!FlagStr)
+        return NULL;
+
+    int first = 1;
+#define APPEND_FLAG(str)            \
+    do {                            \
+        if (!first)                 \
+            strcat(FlagStr, " | "); \
+        else                        \
+            first = 0;              \
+        strcat(FlagStr, str);       \
+    } while (0)
+
+    if (c & 0x0001)
+        APPEND_FLAG("");
+    if (c & 0x0002)
+        APPEND_FLAG("");
+    if (c & 0x0004)
+        APPEND_FLAG("");
+    if (c & 0x0008)
+        APPEND_FLAG("");
+    if (c & 0x0010)
+        APPEND_FLAG("");
+    if (c & 0x0020)
+        APPEND_FLAG("Support High Entropy ASLR");
+    if (c & 0x0040)
+        APPEND_FLAG("Enable RELO");
+    if (c & 0x0080)
+        APPEND_FLAG("Enforce Check Code Integrity");
+    if (c & 0x0100)
+        APPEND_FLAG("Enable NX");
+    if (c & 0x0200)
+        APPEND_FLAG("NOT Support SxS");
+    if (c & 0x0400)
+        APPEND_FLAG("NO SEH");
+    if (c & 0x0800)
+        APPEND_FLAG("NO BIND");
+    if (c & 0x1000)
+        APPEND_FLAG("Required AppContainer");
+    if (c & 0x2000)
+        APPEND_FLAG("WDM");
+    if (c & 0x4000)
+        APPEND_FLAG("Enable CFG");
+    if (c & 0x8000)
+        APPEND_FLAG("Terminal Services Aware");
+
+    if (first)
+        strcat(FlagStr, "None"); // not any flag existed
+
+#undef APPEND_FLAG
+    return FlagStr;
 }
