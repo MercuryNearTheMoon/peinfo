@@ -22,6 +22,7 @@
 #define PE_SIGNATURE 0x00004550
 
 #define MAX_FLAG_STR_LEN 512
+#define MAX_DD_NUM 16
 
 #define UNRECOGNIZED RED "Unrecognized" RESET
 #define RESERVED RED "Reserved" RESET
@@ -108,11 +109,17 @@ typedef struct {
 } WINDOWS_SPECIFIC_FIELDS;
 
 typedef struct {
+    DWORD   VirtualAddress;
+    DWORD   Size;
+} IMAGE_DATA_DIRECTORY;
+
+typedef struct {
     DWORD Signature;
     COFF_HEADER coffH;
     // Optional Headers
     STD_COFF_FIELDS coffF;
     WINDOWS_SPECIFIC_FIELDS winF;
+    IMAGE_DATA_DIRECTORY dd[16];
     // ...
 } PE_HEADER;
 
@@ -165,6 +172,26 @@ typedef enum {
 
 } IMAGE_CHARACTERISTICS;
 
+const char *DataDirectoryNames[16] = {
+    "Export Table",
+    "Import Table",
+    "Resource Table",
+    "Exception Table",
+    "Certificate Table",
+    "Base Relocation Table",
+    "Debug Directory",
+    "Architecture Data",
+    "Global Ptr",
+    "TLS Table",
+    "Load Config Table",
+    "Bound Import",
+    "IAT",
+    "Delay Import Descriptor",
+    "CLR Runtime Header",
+    "Reserved"
+};
+
+
 const char *wordToChars(WORD);
 const char *dwordToChars(DWORD);
 const char *getMachineName(WORD);
@@ -183,3 +210,4 @@ uint32_t getMZFileSize(WORD, WORD);
 void print_IMAGE_DOS_HEADER(IMAGE_DOS_HEADER *);
 void print_DOS_STUB(DOS_STUB *);
 void print_PE_HEADER(PE_HEADER *);
+void printDataDirectories(IMAGE_DATA_DIRECTORY *);

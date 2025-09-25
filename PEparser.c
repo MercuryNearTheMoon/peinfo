@@ -1,5 +1,6 @@
 #include "PEparser.h"
 
+
 int main(int argc, char *argv[]) {
     if (argc < 2) {
         printf("Usage: %s <filename>\n", argv[0]);
@@ -245,6 +246,12 @@ void print_PE_HEADER(PE_HEADER *peH) {
 
     printf("\t\tNums of Data Directory: %d\n", winF->NumberOfRvaAndSizes);
 
+    //  Data Directories
+    IMAGE_DATA_DIRECTORY *dd = peH->dd;
+    puts("\tData Directories:");
+    printDataDirectories(dd);
+
+
     putchar('\n');
 }
 
@@ -469,4 +476,14 @@ char *getDLLCharacteristicsFlags(WORD c) {
 
 #undef APPEND_FLAG
     return FlagStr;
+}
+
+void printDataDirectories(IMAGE_DATA_DIRECTORY *dd) {
+    printf("\t\t%-4s  %-25s  %-10s  %-10s\n", "Idx", "Name", "RVA", "Size");
+
+    for (DWORD i = 0; i < MAX_DD_NUM; i++) {
+        const char *name = i < MAX_DD_NUM ? DataDirectoryNames[i] : "Unknown";
+        printf("\t\t%-4u  %-25s  " DWORD_HEX_OUTPUT "  %10u\n",
+               i, name, dd[i].VirtualAddress, dd[i].Size);
+    }
 }
