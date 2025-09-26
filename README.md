@@ -7,15 +7,27 @@ It can display information about headers, sections, imports, exports, and more.
 ---
 
 ## Build / Compilation
+### Via Makefile (Recommanded)
 
-This project uses a simple `Makefile` for building.
-
+Build
 ```bash
-# Build the project
 make
+```
 
-# Clean up build artifacts
+Clean up
+```bash
 make clean
+```
+
+### Via MSVC
+Build
+```cmd
+cl /Fe:peinfo.exe src/* /I include
+```
+
+Clean up
+```cmd
+del *.obj
 ```
 
 After building, the executable will be available in the project root (e.g., ./peinfo).
