@@ -36,19 +36,22 @@ int main(int argc, char *argv[]) {
     }
     print_PE_HEADER(peH);
 
-    SECTIONS_HEADER *sH = parese_SECTIONS_HEADER(fd);
-    if (sH == NULL) {
+    SECTIONS_HEADERS *sHs = parese_SECTIONS_HEADERS(fd, peH->coffH.NumberOfSections);
+    if (sHs == NULL) {
         free(h), free(d), free(peH->optHeader);
         free(peH);
         return 1;
     }
-    print_SECTIONS_HEADER(sH);
-
+    print_SECTIONS_HEADER(sHs[0]);
+    
     free(h);
     free(d);
     free(peH->optHeader);
+    for (int i=0;i<peH->coffH.NumberOfSections;i++){
+        free(sHs[i]);
+    }
     free(peH);
-    free(sH);
+    free(sHs);
     fclose(fd);
     return 0;
 }

@@ -137,6 +137,8 @@ typedef struct {
     DWORD Characteristics;
 } SECTIONS_HEADER;
 
+typedef SECTIONS_HEADER* SECTIONS_HEADERS;
+
 typedef struct {
     STD_COFF_FIELDS_32 coffF;
     WINDOWS_SPECIFIC_FIELDS_32 winF;

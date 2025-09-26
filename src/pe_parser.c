@@ -145,3 +145,11 @@ SECTIONS_HEADER *parese_SECTIONS_HEADER(FILE *fd){
     
     return sH;
 }
+
+SECTIONS_HEADERS *parese_SECTIONS_HEADERS(FILE *fd, WORD numsOfSections){
+    SECTIONS_HEADERS *sHs = calloc(numsOfSections, sizeof(SECTIONS_HEADER));
+    for (int i=0;i<numsOfSections;i++)
+        sHs[i] = parese_SECTIONS_HEADER(fd);
+    
+    return sHs;
+}
