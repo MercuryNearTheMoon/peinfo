@@ -1,5 +1,6 @@
-#include <stdlib.h>
 #include <stdio.h>
+#include <stdlib.h>
+
 
 #include "pe_inspector.h"
 #include "utils.h"
@@ -67,18 +68,21 @@ void print_PE_HEADER(PE_HEADER *peH) {
     puts("PE HEADER:");
 
     const char *signatureStr = dwordToChars(peH->Signature);
-    printf("\tPE Signature: " DWORD_HEX_OUTPUT "\t(%s)\n", peH->Signature, signatureStr);
+    printf("\tPE Signature: " DWORD_HEX_OUTPUT "\t(%s)\n",
+           peH->Signature, signatureStr);
     // COFF header
     puts("\tCOFF HEADER:");
     COFF_HEADER *coffH = &peH->coffH;
 
     const char *machineName = getMachineName(coffH->Machine);
-    printf("\t\tMachine: " WORD_HEX_OUTPUT "\t(%s)\n", coffH->Machine, machineName);
+    printf("\t\tMachine: " WORD_HEX_OUTPUT "\t(%s)\n",
+           coffH->Machine, machineName);
 
     printf("\t\tNums of Sections: %d\n", coffH->NumberOfSections);
 
     char *localTime = timestampToLocalTime(coffH->TimeDateStamp);
-    printf("\t\tFile Created at: " DWORD_HEX_OUTPUT "\t(%s)\n", coffH->TimeDateStamp, localTime);
+    printf("\t\tFile Created at: " DWORD_HEX_OUTPUT "\t(%s)\n",
+           coffH->TimeDateStamp, localTime);
     free(localTime);
 
     printf("\t\tPoint to SymTable: " DWORD_HEX_OUTPUT "\n", coffH->PointerToSymbolTable);
@@ -87,17 +91,33 @@ void print_PE_HEADER(PE_HEADER *peH) {
     printf("\t\tSize of Optional Header: " WORD_HEX_OUTPUT "\n", coffH->SizeOfOptionalHeader);
 
     char *flagStr = getCharacteristicsFlags(coffH->Characteristics);
-    printf("\t\tCharacteristics: " WORD_HEX_OUTPUT "\t(%s)\n", coffH->Characteristics, flagStr);
+    printf("\t\tCharacteristics: " WORD_HEX_OUTPUT "\t(%s)\n",
+           coffH->Characteristics, flagStr);
     free(flagStr);
 
     // Optional Headers
+    WORD magic = ((WORD *)peH->optHeader)[0];
+    if (magic != COFF_MAGIC_PE32 && magic != COFF_MAGIC_PE32P)
+        return; // Optional Headers is Image Only
+
     //  Standard COFF Fields
     puts("\tSTANDARD COFF FIELDS:");
-    STD_COFF_FIELDS *coffF       = &peH->coffF;
-    const char *coffF_magic_name = getCOFFMagicName(coffF->Magic);
-    printf("\t\tMagic: " WORD_HEX_OUTPUT "\t(%s)\n", coffF->Magic, coffF_magic_name);
+    if (magic == COFF_MAGIC_PE32)
+        _print_PE_OPTIONAL_HEADER_32((OPTIONAL_PE_HEADER_32 *)peH->optHeader);
+    else
+        _print_PE_OPTIONAL_HEADER_64((OPTIONAL_PE_HEADER_64 *)peH->optHeader);
 
-    printf("\t\tLinker Version: %d.%d\n", coffF->MajorLinkerVer, coffF->MinorLinkerVer);
+    putchar('\n');
+}
+
+void _print_PE_OPTIONAL_HEADER_32(OPTIONAL_PE_HEADER_32 *optH) {
+    STD_COFF_FIELDS_32 *coffF    = &optH->coffF;
+    const char *coffF_magic_name = getCOFFMagicName(coffF->Magic);
+    printf("\t\tMagic: " WORD_HEX_OUTPUT "\t(%s)\n",
+           coffF->Magic, coffF_magic_name);
+
+    printf("\t\tLinker Version: %d.%d\n",
+           coffF->MajorLinkerVer, coffF->MinorLinkerVer);
 
     printf("\t\tSize of Code: %d " BYTES_STR "\n", coffF->SizeOfCode);
 
@@ -110,7 +130,7 @@ void print_PE_HEADER(PE_HEADER *peH) {
     printf("\t\tAddress of Beginning-of-Data Section:" DWORD_HEX_OUTPUT "\n", coffF->BaseOfData);
 
     //  Windows-Specific Fields
-    WINDOWS_SPECIFIC_FIELDS *winF = &peH->winF;
+    WINDOWS_SPECIFIC_FIELDS_32 *winF = &optH->winF;
     puts("\tWINDOWS SPECIFIC FIELDS:");
 
     printf("\t\tImage Base: " DWORD_HEX_OUTPUT "\n", winF->ImageBase);
@@ -118,11 +138,14 @@ void print_PE_HEADER(PE_HEADER *peH) {
     printf("\t\tSection Alignment: %d " BYTES_STR "\n", winF->SectionAlignment);
     printf("\t\tFile Alignment: %d " BYTES_STR "\n", winF->FileAlignment);
 
-    printf("\t\tOperating System Version: %d.%d\n", winF->MajorOSVersion, winF->MinorOSVersion);
+    printf("\t\tOperating System Version: %d.%d\n",
+           winF->MajorOSVersion, winF->MinorOSVersion);
 
-    printf("\t\tSubsystem Version: %d.%d\n", winF->MajorSsVersion, winF->MinorSsVersion);
+    printf("\t\tSubsystem Version: %d.%d\n",
+           winF->MajorSsVersion, winF->MinorSsVersion);
 
-    printf("\t\tImage Version: %d.%d\n", winF->MajorImageVersion, winF->MinorImageVersion);
+    printf("\t\tImage Version: %d.%d\n",
+           winF->MajorImageVersion, winF->MinorImageVersion);
 
     printf("\t\tWin32 Version Value: " DWORD_HEX_OUTPUT "\t(" RESERVED ")\n", winF->Win32VersionValue);
 
@@ -132,28 +155,100 @@ void print_PE_HEADER(PE_HEADER *peH) {
 
     printf("\t\tChecksum: " DWORD_HEX_OUTPUT "\n", winF->CheckSum);
 
-    printf("\t\tSubsystem: %d\t(%s)\n", winF->Subsystem, getSubsystemName(winF->Subsystem));
+    printf("\t\tSubsystem: %d\t(%s)\n", winF->Subsystem,
+           getSubsystemName(winF->Subsystem));
 
     char *DlCharFlagsStr = getDLLCharacteristicsFlags(winF->DllCharacteristics);
-    printf("\t\tDLL Characteristics: " WORD_HEX_OUTPUT "\t(%s)\n", winF->DllCharacteristics, DlCharFlagsStr);
+    printf("\t\tDLL Characteristics: " WORD_HEX_OUTPUT "\t(%s)\n",
+           winF->DllCharacteristics, DlCharFlagsStr);
     free(DlCharFlagsStr);
 
     printf("\t\tSize of Stack Reserved: %d " BYTES_STR "\t"
            "Size of Stack Commited: %d " BYTES_STR "\n",
            winF->SizeOfStackReserve, winF->SizeOfStackCommit);
 
-    printf("\t\tSize of Heap Reserved: %d " BYTES_STR "\tSize of Heap Commited: %d " BYTES_STR "\n", winF->SizeOfHeapReserve, winF->SizeOfHeapCommit);
+    printf("\t\tSize of Heap Reserved: %d " BYTES_STR
+           "\tSize of Heap Commited: %d " BYTES_STR "\n",
+           winF->SizeOfHeapReserve, winF->SizeOfHeapCommit);
 
     printf("\t\tLoader Flags: " DWORD_HEX_OUTPUT " (" RESERVED ")\n", winF->LoaderFlags);
 
     printf("\t\tNums of Data Directory: %d\n", winF->NumberOfRvaAndSizes);
 
     //  Data Directories
-    IMAGE_DATA_DIRECTORY *dd = peH->dd;
+    IMAGE_DATA_DIRECTORY *dd = optH->dd;
     puts("\tData Directories:");
     printDataDirectories(dd);
+}
 
-    putchar('\n');
+void _print_PE_OPTIONAL_HEADER_64(OPTIONAL_PE_HEADER_64 *optH) {
+    STD_COFF_FIELDS_64 *coffF    = &optH->coffF;
+    const char *coffF_magic_name = getCOFFMagicName(coffF->Magic);
+    printf("\t\tMagic: " WORD_HEX_OUTPUT "\t(%s)\n",
+           coffF->Magic, coffF_magic_name);
+
+    printf("\t\tLinker Version: %d.%d\n",
+           coffF->MajorLinkerVer, coffF->MinorLinkerVer);
+
+    printf("\t\tSize of Code: %d " BYTES_STR "\n", coffF->SizeOfCode);
+
+    printf("\t\tSize of Initialized data: %d " BYTES_STR "\n", coffF->SizeOfInitedData);
+    printf("\t\tSize of Uninitialized data (.bss): %d " BYTES_STR "\n", coffF->SizeOfUninitedData);
+
+    printf("\t\tAddress of Entry Point:" DWORD_HEX_OUTPUT "\n", coffF->AddrOfEntryPoint);
+
+    printf("\t\tAddress of Beginning-of-Code Section:" DWORD_HEX_OUTPUT "\n", coffF->BaseOfCode);
+
+    //  Windows-Specific Fields
+    WINDOWS_SPECIFIC_FIELDS_64 *winF = &optH->winF;
+    puts("\tWINDOWS SPECIFIC FIELDS:");
+
+    printf("\t\tImage Base: " QWORD_HEX_OUTPUT "\n", winF->ImageBase);
+
+    printf("\t\tSection Alignment: %d " BYTES_STR "\n", winF->SectionAlignment);
+    printf("\t\tFile Alignment: %d " BYTES_STR "\n", winF->FileAlignment);
+
+    printf("\t\tOperating System Version: %d.%d\n",
+           winF->MajorOSVersion, winF->MinorOSVersion);
+
+    printf("\t\tSubsystem Version: %d.%d\n",
+           winF->MajorSsVersion, winF->MinorSsVersion);
+
+    printf("\t\tImage Version: %d.%d\n",
+           winF->MajorImageVersion, winF->MinorImageVersion);
+
+    printf("\t\tWin32 Version Value: " DWORD_HEX_OUTPUT "\t(" RESERVED ")\n", winF->Win32VersionValue);
+
+    printf("\t\tSize of Image: %d " BYTES_STR "\n", winF->SizeOfImage);
+
+    printf("\t\tSize of Headers: %d " BYTES_STR "\n", winF->SizeOfHeaders);
+
+    printf("\t\tChecksum: " DWORD_HEX_OUTPUT "\n", winF->CheckSum);
+
+    printf("\t\tSubsystem: %d\t(%s)\n", winF->Subsystem,
+           getSubsystemName(winF->Subsystem));
+
+    char *DlCharFlagsStr = getDLLCharacteristicsFlags(winF->DllCharacteristics);
+    printf("\t\tDLL Characteristics: " WORD_HEX_OUTPUT "\t(%s)\n",
+           winF->DllCharacteristics, DlCharFlagsStr);
+    free(DlCharFlagsStr);
+
+    printf("\t\tSize of Stack Reserved: %ld " BYTES_STR "\t"
+           "Size of Stack Commited: %ld " BYTES_STR "\n",
+           winF->SizeOfStackReserve, winF->SizeOfStackCommit);
+
+    printf("\t\tSize of Heap Reserved: %ld " BYTES_STR
+           "\tSize of Heap Commited: %ld " BYTES_STR "\n",
+           winF->SizeOfHeapReserve, winF->SizeOfHeapCommit);
+
+    printf("\t\tLoader Flags: " DWORD_HEX_OUTPUT " (" RESERVED ")\n", winF->LoaderFlags);
+
+    printf("\t\tNums of Data Directory: %d\n", winF->NumberOfRvaAndSizes);
+
+    //  Data Directories
+    IMAGE_DATA_DIRECTORY *dd = optH->dd;
+    puts("\tData Directories:");
+    printDataDirectories(dd);
 }
 
 void printDataDirectories(IMAGE_DATA_DIRECTORY *dd) {

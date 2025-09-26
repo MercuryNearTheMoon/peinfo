@@ -1,4 +1,5 @@
 #include "types.h"
+#include "stdbool.h"
 
 const char *wordToChars(WORD);
 const char *dwordToChars(DWORD);
