@@ -263,7 +263,9 @@ void printDataDirectories(IMAGE_DATA_DIRECTORY *dd) {
 
 void _print_SECTIONS_HEADER(SECTIONS_HEADER *sH){
 
-       printf("\tSection Name: %8s\n", sH->Name);
+       char * sectionName = getSectionName(sH->Name);
+       printf("\tSection Name: %s\n", sectionName);
+       free(sectionName);
 
        printf("\t\tVirtual Size: %d" BYTES_STR "\n", sH->VirtualSize);
 

@@ -347,3 +347,17 @@ char *getSectionCharacteristicsFlags(DWORD c) {
 #undef APPEND_FLAG
     return FlagStr;
 }
+
+char *getSectionName(BYTE *name) {
+    if (!name) 
+        return NULL;
+    
+    char *result = (char *)malloc(9);
+    if (!result) 
+        return NULL;
+    
+    memcpy(result, name, 8);
+    result[8] = '\0';
+
+    return result;
+}
