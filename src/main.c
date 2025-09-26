@@ -37,6 +37,7 @@ int main(int argc, char *argv[]) {
 
     free(h);
     free(d);
+    free(peH->optHeader);
     free(peH);
     fclose(fd);
     return 0;
