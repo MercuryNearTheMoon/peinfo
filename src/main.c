@@ -35,10 +35,18 @@ int main(int argc, char *argv[]) {
     }
     print_PE_HEADER(peH);
 
+    SECTIONS_HEADER *sH = parese_SECTIONS_HEADER(fd);
+    if (sH == NULL) {
+        free(h), free(d),free(peH->optHeader);
+        free(peH);
+        return 1;
+    }
+    
     free(h);
     free(d);
     free(peH->optHeader);
     free(peH);
+    free(sH);
     fclose(fd);
     return 0;
 }

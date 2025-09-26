@@ -135,3 +135,13 @@ PE_HEADER *parse_PE_HEADER(FILE *fd) {
     peH->optHeader = opt;
     return peH;
 }
+
+SECTIONS_HEADER *parese_SECTIONS_HEADER(FILE *fd){
+    SECTIONS_HEADER *sH = calloc(1, sizeof(SECTIONS_HEADER));
+    if (fread(sH, sizeof(SECTIONS_HEADER), 1, fd)!=1){
+        fprintf(stderr, "Parse Error: Failed to parse SECTIONS_HEADER");
+        return NULL;
+    }
+    
+    return sH;
+}

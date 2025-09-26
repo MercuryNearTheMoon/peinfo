@@ -60,7 +60,6 @@ typedef struct {
     DWORD BaseOfCode;
 } STD_COFF_FIELDS_64;
 
-
 typedef struct {
     DWORD ImageBase;
     DWORD SectionAlignment;
@@ -124,6 +123,19 @@ typedef struct {
     // Optional Headers
     void *optHeader;
 } PE_HEADER;
+
+typedef struct {
+    BYTE Name[8];
+    DWORD VirtualSize;
+    DWORD VirtualAddress;
+    DWORD SizeOfRawData;
+    DWORD PointerToRawData;
+    DWORD PointerToRelocations;
+    DWORD PointerToLinenumbers;
+    WORD NumberOfRelocations;
+    WORD NumberOfLinenumbers;
+    DWORD Characteristics;
+} SECTIONS_HEADER;
 
 typedef struct {
     STD_COFF_FIELDS_32 coffF;
