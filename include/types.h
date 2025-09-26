@@ -5,7 +5,7 @@
 #define MAGIC_MZ 0x5A4D
 #define PE_SIGNATURE 0x00004550
 
-#define MAX_FLAG_STR_LEN 512
+#define MAX_FLAG_STR_LEN 1024
 #define MAX_DD_NUM 16
 
 typedef uint8_t BYTE;     // 8-bit

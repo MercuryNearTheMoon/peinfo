@@ -11,5 +11,6 @@ const char *getSubsystemName(WORD);
 char *timestampToLocalTime(DWORD);
 char *getCharacteristicsFlags(WORD);
 char *getDLLCharacteristicsFlags(WORD);
+char *getSectionCharacteristicsFlags(DWORD);
 
 uint32_t getMZFileSize(WORD, WORD);

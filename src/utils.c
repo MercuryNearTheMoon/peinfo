@@ -1,9 +1,11 @@
-#include <string.h>
 #include <stdlib.h>
+#include <string.h>
 #include <time.h>
 
-#include "utils.h"
+
 #include "pe_inspector.h"
+#include "utils.h"
+
 
 const char *wordToChars(WORD w) {
     char *result = malloc(3);
@@ -247,6 +249,97 @@ char *getDLLCharacteristicsFlags(WORD c) {
         APPEND_FLAG("Enable CFG");
     if (c & 0x8000)
         APPEND_FLAG("Terminal Services Aware");
+
+    if (first)
+        strcat(FlagStr, "None"); // not any flag existed
+
+#undef APPEND_FLAG
+    return FlagStr;
+}
+
+char *getSectionCharacteristicsFlags(DWORD c) {
+    const char *alignBytes[] = {
+        "Align data on 1-byte", "Align data on 2-byte", "Align data on 4-byte", "Align data on 8-byte", "Align data on 16-byte", "Align data on 32-byte", "Align data on 64-byte",
+        "Align data on 128-byte", "Align data on 256-byte", "Align data on 512-byte", "Align data on 1024-byte", "Align data on 2048-byte", "Align data on 4096-byte", "Align data on 8192-byte"};
+    // ref: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#section-flags
+    char *FlagStr = calloc(MAX_FLAG_STR_LEN, sizeof(char));
+    if (!FlagStr)
+        return NULL;
+
+    int first = 1;
+#define APPEND_FLAG(str)            \
+    do {                            \
+        if (!first)                 \
+            strcat(FlagStr, " | "); \
+        else                        \
+            first = 0;              \
+        strcat(FlagStr, str);       \
+    } while (0)
+
+    if (c & 0x00000000)
+        APPEND_FLAG("");
+    if (c & 0x00000001)
+        APPEND_FLAG("");
+    if (c & 0x00000002)
+        APPEND_FLAG("");
+    if (c & 0x00000004)
+        APPEND_FLAG("");
+    if (c & 0x00000008)
+        APPEND_FLAG("NO PAD");
+    if (c & 0x00000010)
+        APPEND_FLAG("Contain Executable Code");
+    if (c & 0x00000020)
+        APPEND_FLAG("Contain Initialized Data");
+    if (c & 0x00000040)
+        APPEND_FLAG("Contain Uninitialized Data");
+    if (c & 0x00000080)
+        APPEND_FLAG("Enforce Check Code Integrity");
+    if (c & 0x00000100)
+        APPEND_FLAG(RESERVED);
+    if (c & 0x00000200)
+        APPEND_FLAG("Contain Comments");
+    if (c & 0x00000400)
+        APPEND_FLAG(RESERVED);
+    if (c & 0x00000800)
+        APPEND_FLAG("Not be Part of Image");
+    if (c & 0x00001000)
+        APPEND_FLAG("Contains COMDAT Data");
+    if (c & 0x00002000)
+        APPEND_FLAG("");
+    if (c & 0x00004000)
+        APPEND_FLAG("");
+    if (c & 0x00008000)
+        APPEND_FLAG("Contains Data Referenced by GP");
+    if (c & 0x00010000)
+        APPEND_FLAG("");
+    if (c & 0x00020000)
+        APPEND_FLAG(RESERVED);
+    if (c & 0x00040000)
+        APPEND_FLAG(RESERVED);
+    if (c & 0x00080000)
+        APPEND_FLAG(RESERVED);
+    for (int i = 1; i < 0xf; i++) {
+        if (c & (i << 20)) {
+            APPEND_FLAG(alignBytes[i]);
+            break;
+        }
+    }
+    if (c & 0x0100000)
+        APPEND_FLAG("Contains Extended Relocations");
+    if (c & 0x0200000)
+        APPEND_FLAG("Can be Discard");
+    if (c & 0x0400000)
+        APPEND_FLAG("Cannot be Cached");
+    if (c & 0x0800000)
+        APPEND_FLAG("Not Pageable");
+    if (c & 0x10000000)
+        APPEND_FLAG("Can be Shared");
+    if (c & 0x20000000)
+        APPEND_FLAG("Can be Executed");
+    if (c & 0x40000000)
+        APPEND_FLAG("Can be Read");
+    if (c & 0x80000000)
+        APPEND_FLAG("Can be written");
 
     if (first)
         strcat(FlagStr, "None"); // not any flag existed

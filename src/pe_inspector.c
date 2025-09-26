@@ -260,3 +260,27 @@ void printDataDirectories(IMAGE_DATA_DIRECTORY *dd) {
                i, name, dd[i].VirtualAddress, dd[i].Size);
     }
 }
+
+void print_SECTIONS_HEADER(SECTIONS_HEADER *sH){
+       puts("SECTIONS HEADER:");
+
+       printf("\tSection Name: %s\n", sH->Name);
+
+       printf("\tVirtual Size: %d" BYTES_STR "\n", sH->VirtualSize);
+
+       printf("\tVirtual Address: " DWORD_HEX_OUTPUT "\n", sH->VirtualAddress);
+
+       printf("\tSize of Raw Data: %d" BYTES_STR "\n", sH->SizeOfRawData);
+       
+       printf("\tPointer to Raw Data: " DWORD_HEX_OUTPUT "\n", sH->PointerToRawData);
+       printf("\tPointer to Relocations: " DWORD_HEX_OUTPUT "\n", sH->PointerToRelocations);
+       printf("\tPointer to Line Numbers: " DWORD_HEX_OUTPUT "\n", sH->PointerToLinenumbers);
+
+       printf("\tNums of Relocations: %d\n", sH->NumberOfRelocations);
+       printf("\tNums of Line Numbers: %d\n", sH->NumberOfLinenumbers);
+
+       char *flagStr = getSectionCharacteristicsFlags(sH->Characteristics);
+       printf("\tSections Flags: " DWORD_HEX_OUTPUT "\n\t\t" "%s\n",
+               sH->Characteristics, flagStr);
+       free(flagStr);
+}

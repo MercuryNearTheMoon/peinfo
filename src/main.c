@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "pe_parser.h"
 #include "pe.h"
 #include "pe_inspector.h"
+#include "pe_parser.h"
+
 
 int main(int argc, char *argv[]) {
     if (argc < 2) {
@@ -37,11 +38,12 @@ int main(int argc, char *argv[]) {
 
     SECTIONS_HEADER *sH = parese_SECTIONS_HEADER(fd);
     if (sH == NULL) {
-        free(h), free(d),free(peH->optHeader);
+        free(h), free(d), free(peH->optHeader);
         free(peH);
         return 1;
     }
-    
+    print_SECTIONS_HEADER(sH);
+
     free(h);
     free(d);
     free(peH->optHeader);
@@ -50,7 +52,3 @@ int main(int argc, char *argv[]) {
     fclose(fd);
     return 0;
 }
-
-
-
-
