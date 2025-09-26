@@ -122,6 +122,8 @@ PE_HEADER *parse_PE_HEADER(FILE *fd) {
         }
 
         opt = (void *)opt64;
+    } else if(magic == COFF_MAGIC_ROM){
+        opt = NULL;    // Only PE32 and PE32+ have Optional Header
     } else {
         fprintf(stderr,
                 "Parse Error: " UNRECOGNIZED " Magic " WORD_HEX_OUTPUT " in Optional Header Standard Fields\n",
