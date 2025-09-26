@@ -8,10 +8,12 @@
 #define MAX_FLAG_STR_LEN 512
 #define MAX_DD_NUM 16
 
-typedef uint8_t BYTE;   // 8-bit
-typedef uint16_t WORD;  // 16-bit
-typedef uint32_t DWORD; // 32-bit
-typedef int32_t LONG;   // 32-bit signed
+typedef uint8_t BYTE;     // 8-bit
+typedef uint16_t WORD;    // 16-bit
+typedef uint32_t DWORD;   // 32-bit
+typedef int32_t LONG;     // 32-bit signed
+typedef uint64_t QWORD;   // 64-bit
+typedef QWORD ULONGLONNG; // 64-bit
 
 typedef enum {
     IMAGE_MACHINE_UNKNOWN   = 0x0,    // Unknown

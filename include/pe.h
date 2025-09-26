@@ -47,7 +47,19 @@ typedef struct {
     DWORD AddrOfEntryPoint;
     DWORD BaseOfCode;
     DWORD BaseOfData;
-} STD_COFF_FIELDS;
+} STD_COFF_FIELDS_32;
+
+typedef struct {
+    WORD Magic;
+    BYTE MajorLinkerVer;
+    BYTE MinorLinkerVer;
+    DWORD SizeOfCode;
+    DWORD SizeOfInitedData;
+    DWORD SizeOfUninitedData;
+    DWORD AddrOfEntryPoint;
+    DWORD BaseOfCode;
+} STD_COFF_FIELDS_64;
+
 
 typedef struct {
     DWORD ImageBase;
@@ -73,7 +85,33 @@ typedef struct {
     DWORD SizeOfHeapCommit;
     DWORD LoaderFlags; // Reversed, must be 0
     DWORD NumberOfRvaAndSizes;
-} WINDOWS_SPECIFIC_FIELDS;
+} WINDOWS_SPECIFIC_FIELDS_32;
+
+typedef struct {
+    QWORD ImageBase;
+    DWORD SectionAlignment;
+    DWORD FileAlignment;
+    // OS: OperatingSystem
+    WORD MajorOSVersion;
+    WORD MinorOSVersion;
+    WORD MajorImageVersion;
+    WORD MinorImageVersion;
+    // Ss: Subsystem
+    WORD MajorSsVersion;
+    WORD MinorSsVersion;
+    DWORD Win32VersionValue; // Reversed, must be 0
+    DWORD SizeOfImage;
+    DWORD SizeOfHeaders;
+    DWORD CheckSum;
+    WORD Subsystem;
+    WORD DllCharacteristics;
+    QWORD SizeOfStackReserve;
+    QWORD SizeOfStackCommit;
+    QWORD SizeOfHeapReserve;
+    QWORD SizeOfHeapCommit;
+    DWORD LoaderFlags; // Reversed, must be 0
+    DWORD NumberOfRvaAndSizes;
+} WINDOWS_SPECIFIC_FIELDS_64;
 
 typedef struct {
     DWORD VirtualAddress;
@@ -84,8 +122,17 @@ typedef struct {
     DWORD Signature;
     COFF_HEADER coffH;
     // Optional Headers
-    STD_COFF_FIELDS coffF;
-    WINDOWS_SPECIFIC_FIELDS winF;
-    IMAGE_DATA_DIRECTORY dd[16];
-    // ...
+    void *optHeader;
 } PE_HEADER;
+
+typedef struct {
+    STD_COFF_FIELDS_32 coffF;
+    WINDOWS_SPECIFIC_FIELDS_32 winF;
+    IMAGE_DATA_DIRECTORY dd[16];
+} OPTIONAL_PE_HEADER_32;
+
+typedef struct {
+    STD_COFF_FIELDS_64 coffF;
+    WINDOWS_SPECIFIC_FIELDS_64 winF;
+    IMAGE_DATA_DIRECTORY dd[16];
+} OPTIONAL_PE_HEADER_64;
