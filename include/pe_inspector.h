@@ -19,7 +19,9 @@
 
 #define UNRECOGNIZED RED "Unrecognized" RESET
 #define RESERVED RED "Reserved" RESET
-#define BYTES_STR BLUE "bytes" RESET
+#define BYTES_STR BLUE "Bytes" RESET
+
+#define SIZE_OUTPUT "0x%04X " BYTES_STR
 
 void print_IMAGE_DOS_HEADER(IMAGE_DOS_HEADER *);
 void print_DOS_STUB(DOS_STUB *);

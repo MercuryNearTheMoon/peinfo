@@ -28,12 +28,12 @@ void print_IMAGE_DOS_HEADER(IMAGE_DOS_HEADER *h) {
     const char *magicStr = wordToChars(h->e_magic);
 
     printf("\tMagic: " WORD_HEX_OUTPUT "\t(%s)\n", h->e_magic, magicStr);
-    printf("\tMZ file size: %d " BYTES_STR "\n", getMZFileSize(h->e_cp, h->e_cblp));
+    printf("\tMZ file size: " SIZE_OUTPUT "\n", getMZFileSize(h->e_cp, h->e_cblp));
     printf("\tRelocation table offset: 0x%04X, Nums of entries: %d\n",
            h->e_lfarlc, h->e_crlc);
-    printf("\tDOS header size: %d " BYTES_STR "\n", h->e_cparhdr * 16);
-    printf("\tMZ DOS stub min memory size: %d " BYTES_STR "\n", h->e_minalloc * 16);
-    printf("\tMZ DOS stub max memory size: %d " BYTES_STR "\n", h->e_maxalloc * 16);
+    printf("\tDOS header size: " SIZE_OUTPUT "\n", h->e_cparhdr * 16);
+    printf("\tMZ DOS stub min memory size: " SIZE_OUTPUT "\n", h->e_minalloc * 16);
+    printf("\tMZ DOS stub max memory size: " SIZE_OUTPUT "\n", h->e_maxalloc * 16);
     printf("\tMS DOS init stack addr: 0x%04X (SS:SP = 0x%04X:0x%04X)\n",
            h->e_ss * 16 + h->e_sp, h->e_ss, h->e_sp);
     printf("\tDOS EXE stub checksum: " WORD_HEX_OUTPUT "\n", h->e_csum);
@@ -119,10 +119,10 @@ void _print_PE_OPTIONAL_HEADER_32(OPTIONAL_PE_HEADER_32 *optH) {
     printf("\t\tLinker Version: %d.%d\n",
            coffF->MajorLinkerVer, coffF->MinorLinkerVer);
 
-    printf("\t\tSize of Code: %d " BYTES_STR "\n", coffF->SizeOfCode);
+    printf("\t\tSize of Code: " SIZE_OUTPUT "\n", coffF->SizeOfCode);
 
-    printf("\t\tSize of Initialized data: %d " BYTES_STR "\n", coffF->SizeOfInitedData);
-    printf("\t\tSize of Uninitialized data (.bss): %d " BYTES_STR "\n", coffF->SizeOfUninitedData);
+    printf("\t\tSize of Initialized data: " SIZE_OUTPUT "\n", coffF->SizeOfInitedData);
+    printf("\t\tSize of Uninitialized data (.bss): " SIZE_OUTPUT "\n", coffF->SizeOfUninitedData);
 
     printf("\t\tAddress of Entry Point:" DWORD_HEX_OUTPUT "\n", coffF->AddrOfEntryPoint);
 
@@ -135,8 +135,8 @@ void _print_PE_OPTIONAL_HEADER_32(OPTIONAL_PE_HEADER_32 *optH) {
 
     printf("\t\tImage Base: " DWORD_HEX_OUTPUT "\n", winF->ImageBase);
 
-    printf("\t\tSection Alignment: %d " BYTES_STR "\n", winF->SectionAlignment);
-    printf("\t\tFile Alignment: %d " BYTES_STR "\n", winF->FileAlignment);
+    printf("\t\tSection Alignment: " SIZE_OUTPUT "\n", winF->SectionAlignment);
+    printf("\t\tFile Alignment: " SIZE_OUTPUT "\n", winF->FileAlignment);
 
     printf("\t\tOperating System Version: %d.%d\n",
            winF->MajorOSVersion, winF->MinorOSVersion);
@@ -149,9 +149,9 @@ void _print_PE_OPTIONAL_HEADER_32(OPTIONAL_PE_HEADER_32 *optH) {
 
     printf("\t\tWin32 Version Value: " DWORD_HEX_OUTPUT "\t(" RESERVED ")\n", winF->Win32VersionValue);
 
-    printf("\t\tSize of Image: %d " BYTES_STR "\n", winF->SizeOfImage);
+    printf("\t\tSize of Image: " SIZE_OUTPUT "\n", winF->SizeOfImage);
 
-    printf("\t\tSize of Headers: %d " BYTES_STR "\n", winF->SizeOfHeaders);
+    printf("\t\tSize of Headers: " SIZE_OUTPUT "\n", winF->SizeOfHeaders);
 
     printf("\t\tChecksum: " DWORD_HEX_OUTPUT "\n", winF->CheckSum);
 
@@ -163,12 +163,12 @@ void _print_PE_OPTIONAL_HEADER_32(OPTIONAL_PE_HEADER_32 *optH) {
            winF->DllCharacteristics, DlCharFlagsStr);
     free(DlCharFlagsStr);
 
-    printf("\t\tSize of Stack Reserved: %d " BYTES_STR "\t"
-           "Size of Stack Commited: %d " BYTES_STR "\n",
+    printf("\t\tSize of Stack Reserved: " SIZE_OUTPUT "\t"
+           "Size of Stack Commited: " SIZE_OUTPUT "\n",
            winF->SizeOfStackReserve, winF->SizeOfStackCommit);
 
-    printf("\t\tSize of Heap Reserved: %d " BYTES_STR
-           "\tSize of Heap Commited: %d " BYTES_STR "\n",
+    printf("\t\tSize of Heap Reserved: " SIZE_OUTPUT
+           "\tSize of Heap Commited: " SIZE_OUTPUT "\n",
            winF->SizeOfHeapReserve, winF->SizeOfHeapCommit);
 
     printf("\t\tLoader Flags: " DWORD_HEX_OUTPUT " (" RESERVED ")\n", winF->LoaderFlags);
@@ -190,10 +190,10 @@ void _print_PE_OPTIONAL_HEADER_64(OPTIONAL_PE_HEADER_64 *optH) {
     printf("\t\tLinker Version: %d.%d\n",
            coffF->MajorLinkerVer, coffF->MinorLinkerVer);
 
-    printf("\t\tSize of Code: %d " BYTES_STR "\n", coffF->SizeOfCode);
+    printf("\t\tSize of Code: " SIZE_OUTPUT "\n", coffF->SizeOfCode);
 
-    printf("\t\tSize of Initialized data: %d " BYTES_STR "\n", coffF->SizeOfInitedData);
-    printf("\t\tSize of Uninitialized data (.bss): %d " BYTES_STR "\n", coffF->SizeOfUninitedData);
+    printf("\t\tSize of Initialized data: " SIZE_OUTPUT "\n", coffF->SizeOfInitedData);
+    printf("\t\tSize of Uninitialized data (.bss): " SIZE_OUTPUT "\n", coffF->SizeOfUninitedData);
 
     printf("\t\tAddress of Entry Point:" DWORD_HEX_OUTPUT "\n", coffF->AddrOfEntryPoint);
 
@@ -205,8 +205,8 @@ void _print_PE_OPTIONAL_HEADER_64(OPTIONAL_PE_HEADER_64 *optH) {
 
     printf("\t\tImage Base: " QWORD_HEX_OUTPUT "\n", winF->ImageBase);
 
-    printf("\t\tSection Alignment: %d " BYTES_STR "\n", winF->SectionAlignment);
-    printf("\t\tFile Alignment: %d " BYTES_STR "\n", winF->FileAlignment);
+    printf("\t\tSection Alignment: " SIZE_OUTPUT "\n", winF->SectionAlignment);
+    printf("\t\tFile Alignment: " SIZE_OUTPUT "\n", winF->FileAlignment);
 
     printf("\t\tOperating System Version: %d.%d\n",
            winF->MajorOSVersion, winF->MinorOSVersion);
@@ -219,9 +219,9 @@ void _print_PE_OPTIONAL_HEADER_64(OPTIONAL_PE_HEADER_64 *optH) {
 
     printf("\t\tWin32 Version Value: " DWORD_HEX_OUTPUT "\t(" RESERVED ")\n", winF->Win32VersionValue);
 
-    printf("\t\tSize of Image: %d " BYTES_STR "\n", winF->SizeOfImage);
+    printf("\t\tSize of Image: " SIZE_OUTPUT "\n", winF->SizeOfImage);
 
-    printf("\t\tSize of Headers: %d " BYTES_STR "\n", winF->SizeOfHeaders);
+    printf("\t\tSize of Headers: " SIZE_OUTPUT "\n", winF->SizeOfHeaders);
 
     printf("\t\tChecksum: " DWORD_HEX_OUTPUT "\n", winF->CheckSum);
 
@@ -267,11 +267,11 @@ void _print_SECTIONS_HEADER(SECTIONS_HEADER *sH){
        printf("\tSection Name: %s\n", sectionName);
        free(sectionName);
 
-       printf("\t\tVirtual Size: %d" BYTES_STR "\n", sH->VirtualSize);
+       printf("\t\tVirtual Size: " SIZE_OUTPUT "\n", sH->VirtualSize);
 
        printf("\t\tVirtual Address: " DWORD_HEX_OUTPUT "\n", sH->VirtualAddress);
 
-       printf("\t\tSize of Raw Data: %d" BYTES_STR "\n", sH->SizeOfRawData);
+       printf("\t\tSize of Raw Data: " SIZE_OUTPUT "\n", sH->SizeOfRawData);
        
        printf("\t\tPointer to Raw Data: " DWORD_HEX_OUTPUT "\n", sH->PointerToRawData);
        printf("\t\tPointer to Relocations: " DWORD_HEX_OUTPUT "\n", sH->PointerToRelocations);
