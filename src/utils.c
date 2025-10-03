@@ -412,3 +412,10 @@ size_t bsRead(void *out, size_t size, size_t nmemb, ByteStream *bs) {
 
     return bytesCanRead / size;
 }
+
+void bsFree(ByteStream *bs){
+    if (bs) {
+        free(bs->base);
+        free(bs);
+    }
+}
