@@ -62,3 +62,9 @@ typedef enum {
     IMAGE_SUBSYSTEM_XBOX                     = 14,
     IMAGE_SUBSYSTEM_WINDOWS_BOOT_APPLICATION = 15
 } IMAGE_SUBSYSTEM;
+
+typedef struct {
+    BYTE *base;
+    BYTE *cursor;
+    size_t size;
+} ByteStream;

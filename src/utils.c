@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
@@ -5,7 +6,6 @@
 
 #include "pe_inspector.h"
 #include "utils.h"
-
 
 const char *wordToChars(WORD w) {
     char *result = malloc(3);
@@ -349,15 +349,50 @@ char *getSectionCharacteristicsFlags(DWORD c) {
 }
 
 char *getSectionName(BYTE *name) {
-    if (!name) 
+    if (!name)
         return NULL;
-    
+
     char *result = (char *)malloc(9);
-    if (!result) 
+    if (!result)
         return NULL;
-    
+
     memcpy(result, name, 8);
     result[8] = '\0';
 
     return result;
+}
+
+ByteStream *loadFile(FILE *fd) {
+    if (!fd) return NULL;
+
+    ByteStream *bs = calloc(1, sizeof(ByteStream));
+    if (!bs) return NULL;
+
+    if (fseek(fd, 0, SEEK_END) != 0) {
+        free(bs);
+        return NULL;
+    }
+    long fsize = ftell(fd);
+    if (fsize < 0) {
+        free(bs);
+        return NULL;
+    }
+    rewind(fd);
+
+    bs->size = (size_t)fsize;
+    bs->base = malloc(bs->size);
+    if (!bs->base) {
+        free(bs);
+        return NULL;
+    }
+
+    size_t nRead = fread(bs->base, 1, bs->size, fd);
+    if (nRead != bs->size) {
+        free(bs->base);
+        free(bs);
+        return NULL;
+    }
+
+    bs->cursor = bs->base;
+    return bs;
 }

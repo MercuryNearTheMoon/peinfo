@@ -13,5 +13,6 @@ char *getDLLCharacteristicsFlags(WORD);
 char *getSectionCharacteristicsFlags(DWORD);
 char *getSectionName(BYTE *);
 
-
 uint32_t getMZFileSize(WORD, WORD);
+
+ByteStream *loadFile(FILE *);

@@ -4,6 +4,7 @@
 #include "pe.h"
 #include "pe_inspector.h"
 #include "pe_parser.h"
+#include "utils.h"
 
 
 int main(int argc, char *argv[]) {
@@ -12,8 +13,15 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     FILE *fd = fopen(argv[1], "rb");
-    if (fd == NULL) {
+    if (!fd) {
         fprintf(stderr, "Error: Can't open file %s\n", argv[1]);
+        return 1;
+    }
+
+    ByteStream *bs = loadFile(fd);
+    if (!bs) {
+        fprintf(stderr, "Error: Failed to load file %s\n", argv[1]);
+        fclose(fd);
         return 1;
     }
 
