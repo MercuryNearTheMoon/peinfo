@@ -1,11 +1,12 @@
 #include <stdlib.h>
 
 #include "pe_parser.h"
+#include "utils.h"
 
-IMAGE_DOS_HEADER *parse_IMAGE_DOS_HEADER(FILE *fd) {
+IMAGE_DOS_HEADER *parse_IMAGE_DOS_HEADER(ByteStream *bs) {
     IMAGE_DOS_HEADER *h = calloc(1, sizeof(IMAGE_DOS_HEADER));
 
-    if (fread(h, sizeof(IMAGE_DOS_HEADER), 1, fd) != 1) {
+    if (bsRead(h, sizeof(IMAGE_DOS_HEADER), 1, bs) != 1) {
         fprintf(stderr, "Parse Error: Failed to read IMAGE_DOS_HEADER\n");
         free(h);
         return NULL;
@@ -20,7 +21,7 @@ IMAGE_DOS_HEADER *parse_IMAGE_DOS_HEADER(FILE *fd) {
     return h;
 }
 
-DOS_STUB *parse_DOS_STUB(FILE *fd, IMAGE_DOS_HEADER *h) {
+DOS_STUB *parse_DOS_STUB(ByteStream *bs, IMAGE_DOS_HEADER *h) {
     DOS_STUB *d = calloc(1, sizeof(DOS_STUB));
 
     d->size = h->e_lfanew - sizeof(IMAGE_DOS_HEADER);
@@ -31,7 +32,7 @@ DOS_STUB *parse_DOS_STUB(FILE *fd, IMAGE_DOS_HEADER *h) {
     }
 
     d->code = calloc(d->size, sizeof(BYTE));
-    if (fread(d->code, d->size, 1, fd) != 1) {
+    if (bsRead(d->code, d->size, 1, bs) != 1) {
         fprintf(stderr, "Parse Error: Failed to read DOS_STUB\n");
         free(d);
         return NULL;
@@ -40,11 +41,11 @@ DOS_STUB *parse_DOS_STUB(FILE *fd, IMAGE_DOS_HEADER *h) {
     return d;
 }
 
-PE_HEADER *parse_PE_HEADER(FILE *fd) {
+PE_HEADER *parse_PE_HEADER(ByteStream *bs) {
     PE_HEADER *peH = calloc(1, sizeof(PE_HEADER));
-    if (fread(peH,
+    if (bsRead(peH,
               sizeof(PE_HEADER) - sizeof(void *), // not to read optHeader
-              1, fd) != 1) {
+              1, bs) != 1) {
         fprintf(stderr, "Parse Error: Failed to read PE_HEADER\n");
         free(peH);
         return NULL;
@@ -59,7 +60,7 @@ PE_HEADER *parse_PE_HEADER(FILE *fd) {
     }
 
     WORD magic;
-    if (fread(&magic, sizeof(magic), 1, fd) != 1) {
+    if (bsRead(&magic, sizeof(magic), 1, bs) != 1) {
         fprintf(stderr, "Parse Error: Failed to read Magic in Optional Header Standard Fields\n");
         free(peH);
         return NULL;
@@ -70,23 +71,23 @@ PE_HEADER *parse_PE_HEADER(FILE *fd) {
         OPTIONAL_PE_HEADER_32 *opt32 = (OPTIONAL_PE_HEADER_32 *)calloc(1, sizeof(OPTIONAL_PE_HEADER_32));
         opt32->coffF.Magic           = magic;
 
-        if (fread(&opt32->coffF.MajorLinkerVer,
+        if (bsRead(&opt32->coffF.MajorLinkerVer,
                   sizeof(STD_COFF_FIELDS_32) - sizeof(WORD), // magic has been read
-                  1, fd) != 1) {
+                  1, bs) != 1) {
             fprintf(stderr, "Parse Error: Failed to read STD_COFF_FIELDS_32\n");
             free(opt32);
             free(peH);
             return NULL;
         }
 
-        if (fread(&opt32->winF, sizeof(WINDOWS_SPECIFIC_FIELDS_32), 1, fd) != 1) {
+        if (bsRead(&opt32->winF, sizeof(WINDOWS_SPECIFIC_FIELDS_32), 1, bs) != 1) {
             fprintf(stderr, "Parse Error: Failed to read WINDOWS_SPECIFIC_FIELDS_32\n");
             free(opt32);
             free(peH);
             return NULL;
         }
 
-        if (fread(opt32->dd, sizeof(IMAGE_DATA_DIRECTORY) * 16, 1, fd) != 1) {
+        if (bsRead(opt32->dd, sizeof(IMAGE_DATA_DIRECTORY) * 16, 1, bs) != 1) {
             fprintf(stderr, "Parse Error: Failed to read IMAGE_DATA_DIRECTORY array\n");
             free(opt32);
             free(peH);
@@ -98,23 +99,23 @@ PE_HEADER *parse_PE_HEADER(FILE *fd) {
         OPTIONAL_PE_HEADER_64 *opt64 = (OPTIONAL_PE_HEADER_64 *)calloc(1, sizeof(OPTIONAL_PE_HEADER_64));
         opt64->coffF.Magic           = magic;
 
-        if (fread(&opt64->coffF.MajorLinkerVer,
+        if (bsRead(&opt64->coffF.MajorLinkerVer,
                   sizeof(STD_COFF_FIELDS_64) - sizeof(WORD),
-                  1, fd) != 1) {
+                  1, bs) != 1) {
             fprintf(stderr, "Parse Error: Failed to read STD_COFF_FIELDS_64\n");
             free(opt64);
             free(peH);
             return NULL;
         }
 
-        if (fread(&opt64->winF, sizeof(WINDOWS_SPECIFIC_FIELDS_64), 1, fd) != 1) {
+        if (bsRead(&opt64->winF, sizeof(WINDOWS_SPECIFIC_FIELDS_64), 1, bs) != 1) {
             fprintf(stderr, "Parse Error: Failed to read WINDOWS_SPECIFIC_FIELDS_64\n");
             free(opt64);
             free(peH);
             return NULL;
         }
 
-        if (fread(opt64->dd, sizeof(IMAGE_DATA_DIRECTORY) * 16, 1, fd) != 1) {
+        if (bsRead(opt64->dd, sizeof(IMAGE_DATA_DIRECTORY) * 16, 1, bs) != 1) {
             fprintf(stderr, "Parse Error: Failed to read IMAGE_DATA_DIRECTORY turísticaarray\n");
             free(opt64);
             free(peH);
@@ -136,9 +137,9 @@ PE_HEADER *parse_PE_HEADER(FILE *fd) {
     return peH;
 }
 
-SECTIONS_HEADER *parese_SECTIONS_HEADER(FILE *fd){
+SECTIONS_HEADER *parese_SECTIONS_HEADER(ByteStream *bs){
     SECTIONS_HEADER *sH = calloc(1, sizeof(SECTIONS_HEADER));
-    if (fread(sH, sizeof(SECTIONS_HEADER), 1, fd)!=1){
+    if (bsRead(sH, sizeof(SECTIONS_HEADER), 1, bs)!=1){
         fprintf(stderr, "Parse Error: Failed to parse SECTIONS_HEADER");
         return NULL;
     }
@@ -146,10 +147,10 @@ SECTIONS_HEADER *parese_SECTIONS_HEADER(FILE *fd){
     return sH;
 }
 
-SECTIONS_HEADERS *parese_SECTIONS_HEADERS(FILE *fd, WORD numsOfSections){
+SECTIONS_HEADERS *parese_SECTIONS_HEADERS(ByteStream *bs, WORD numsOfSections){
     SECTIONS_HEADERS *sHs = calloc(numsOfSections, sizeof(SECTIONS_HEADER));
     for (int i=0;i<numsOfSections;i++)
-        sHs[i] = parese_SECTIONS_HEADER(fd);
+        sHs[i] = parese_SECTIONS_HEADER(bs);
     
     return sHs;
 }

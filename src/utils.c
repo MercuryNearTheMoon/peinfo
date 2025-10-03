@@ -396,3 +396,19 @@ ByteStream *loadFile(FILE *fd) {
     bs->cursor = bs->base;
     return bs;
 }
+
+size_t bsRead(void *out, size_t size, size_t nmemb, ByteStream *bs) {
+    size_t bytesToRead = size * nmemb;
+    size_t bytesLeft = bs->size - (size_t)(bs->cursor - bs->base);
+
+    if (bytesLeft == 0) {
+        return 0; // EOF
+    }
+
+    size_t bytesCanRead = (bytesToRead <= bytesLeft) ? bytesToRead : bytesLeft;
+
+    memcpy(out, bs->cursor, bytesCanRead);
+    bs->cursor += bytesCanRead;
+
+    return bytesCanRead / size;
+}

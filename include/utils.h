@@ -16,3 +16,4 @@ char *getSectionName(BYTE *);
 uint32_t getMZFileSize(WORD, WORD);
 
 ByteStream *loadFile(FILE *);
+size_t bsRead(void *, size_t , size_t , ByteStream *);
